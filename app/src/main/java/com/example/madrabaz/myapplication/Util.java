@@ -196,14 +196,18 @@ class Util {
         // TODO: Bu (sout veya iterate eden) forlar da uzun surebilir, yeni bi thread e tasiyabilirsin.
         // TODO: Ici bos spectralPeakler var mi yok mu, onlari es gectim
         // TODO: Virgulden sonra tek bi hane birakmayi dene
-        NumberFormat formatter = new DecimalFormat("#.#");
-        float something;
+        NumberFormat nf = NumberFormat.getNumberInstance(Locale.US);
+		DecimalFormat formatter = (DecimalFormat)nf;
+		formatter.applyPattern("#.#");
+		float something;
+        String fString;
         // Burasi TreeMap, cunku frekans siralamasi yapip gondermeli
         TreeMap<Float, Weight> myMap = new TreeMap<>();
         for(List<SpectralPeakProcessor.SpectralPeak> a : peaks){
             // TODO a'dakilerin en yuksek magnitudelarini al
             for(SpectralPeakProcessor.SpectralPeak b : a){
-                something = Float.parseFloat(formatter.format(b.getFrequencyInHertz()));
+				fString = formatter.format(b.getFrequencyInHertz());
+                something = Float.parseFloat(fString);
                 if(!myMap.containsKey(something)){
                     myMap.put(something, new Weight(b.getMagnitude()));
                 } else {
