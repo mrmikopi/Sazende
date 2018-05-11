@@ -32,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        util = new Util(this);
+		
+		Context appContext = getApplicationContext();
+        util = new Util(appContext);
         // Run this in another thread so ui thread relaxes maybe?
         //Context context = getApplicationContext();
         try {
