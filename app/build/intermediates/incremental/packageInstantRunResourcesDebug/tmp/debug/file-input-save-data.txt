@@ -1,0 +1,23 @@
+#Internal package file, do not edit.
+#Sat Apr 21 22:07:28 AST 2018
+2.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+0.path=arm64-v8a_ffmpeg
+2.baseType=DIRECTORY
+3.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+2.set=ASSET
+1.path=armeabi-v7a-neon_ffmpeg
+4.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+count=5
+2.path=x86_ffmpeg
+4.set=ASSET
+3.path=armeabi-v7a_ffmpeg
+3.baseType=DIRECTORY
+1.set=ASSET
+4.path=x86-64_ffmpeg
+1.baseType=DIRECTORY
+0.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+0.baseType=DIRECTORY
+3.set=ASSET
+1.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+4.baseType=DIRECTORY
+0.set=ASSET

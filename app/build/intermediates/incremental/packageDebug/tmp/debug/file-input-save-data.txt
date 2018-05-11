@@ -1,0 +1,31 @@
+#Internal package file, do not edit.
+#Sat Apr 21 22:08:07 AST 2018
+2.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+5.set=ASSET
+0.path=classes.dex
+2.baseType=DIRECTORY
+3.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\11
+2.set=ASSET
+1.path=arm64-v8a_ffmpeg
+4.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+count=7
+5.baseType=DIRECTORY
+2.path=armeabi-v7a-neon_ffmpeg
+5.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+4.set=ASSET
+3.path=classes.dex
+6.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+3.baseType=DIRECTORY
+1.set=ASSET
+4.path=x86_ffmpeg
+6.set=ASSET
+1.baseType=DIRECTORY
+6.baseType=DIRECTORY
+5.path=armeabi-v7a_ffmpeg
+0.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\12
+0.baseType=DIRECTORY
+3.set=DEX
+6.path=x86-64_ffmpeg
+1.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
+4.baseType=DIRECTORY
+0.set=DEX
