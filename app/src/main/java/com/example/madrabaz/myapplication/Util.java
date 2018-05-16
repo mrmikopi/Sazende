@@ -389,6 +389,7 @@ class Util {
                     }
                 if (max == 0f) {
                     tempIndices.add(tempIndices.get(tempIndices.size() - 1));
+                    System.out.println("Added Duplicate!");
                 } else {
                     tempIndices.add(values.indexOf(max));
                 }
@@ -403,21 +404,9 @@ class Util {
             } else {
                 // TODO Gives index=-1 error! Nasil oluyorsa...
                 for (int b : tempIndices) {
-                    if(b != -1){
-
                         toAdd.add(freqs.get(b));
-                    }
-                    else{
-                        System.out.println("I CAME HERE");
-                        toAdd.add(0f);
-                    }
                 }
             }
-            // Sirasi bozuk gidiyor, duzeltmek lazim
-//            toAdd = fillEmptyIndices(toAdd, a);
-
-
-
 
             // ****** IKINCI OKTAV ******* //
 
