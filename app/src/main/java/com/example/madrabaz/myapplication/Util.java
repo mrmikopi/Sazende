@@ -436,6 +436,7 @@ class Util {
                     }
                 }if (max == 0f) {
                     tempIndices.add(tempIndices.get(tempIndices.size() - 1));
+                    System.out.println("Added Duplicate!");
                 } else {
                     tempIndices.add(values.indexOf(max));
                 }
