@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -81,14 +82,14 @@ class Util {
                     for (int i = 0; i < 13 - length; i++) {
                         insideList.add(insideList.get(insideList.size() - 7) + 53);
                     }
-                    if (!makams.containsKey(words[0])) {
+                    if (!makamMap.containsKey(words[0])) {
                         outerList = new ArrayList<>();
                         outerList.add(insideList);
-                        makams.put(words[0], outerList);
+                        makamMap.put(words[0], outerList);
                     } else {
-                        outerList = makams.get(words[0]);
+                        outerList = makamMap.get(words[0]);
                         outerList.add(insideList);
-                        makams.put(words[0], outerList);
+                        makamMap.put(words[0], outerList);
                     }
                     // TODO Clearlar burada yapilabilir
                 }
@@ -379,11 +380,12 @@ class Util {
 
     private List<List<Float>> getNotes(Map<Float, Float> lastOne, float[] notes) {
 
+        System.out.println("Salak metodu calistirdim. Notalar: " + notes.toString());
         List<List<Float>> allNotes = new LinkedList<>();
         List<Float> toAdd;
         List<Integer> octaveIndices;
 //        List<Float> octaveFreqs;
-        List<Float> temp;
+        List<Integer> tempIndices;
         List<Float> freqs = new ArrayList<>(lastOne.keySet());
         //System.out.println(freqs.toString());
         List<Float> values = new ArrayList<>(lastOne.values());
@@ -395,110 +397,54 @@ class Util {
 		// TODO
 		// TODO
         for(float a : notes){
-            // Test
-            //System.out.println("getNotes, trying note " + a + " inside loop.");
             octaveIndices = new ArrayList<>();
-//            octaveFreqs = new ArrayList<>();
 
             //System.out.println("FIRST OCTAVE BEFORE AZALTMA");
-            for (int i = freqs.indexOf(a); i < freqs.size(); i++){
+            for (int i = freqs.indexOf(a) + 1; i < freqs.size(); i++){
 
                 if(freqs.get(i) < a*2.015f){
-                    //System.out.println("i is: " + i + ", freqs.get(i) returns: " + freqs.get(i) + ", values.get(i) returns: " + values.get(i));
                     octaveIndices.add(i);
-//                    octaveFreqs.add(freqs.get(i));
-
-                    //System.out.println(freqs.get(i)+" "+values.get(i));
                 }
             }
 
-            temp = new LinkedList<>();
+            tempIndices = new LinkedList<>();
 
-            // Create indices list with false for all elements
-            /*LinkedList<Boolean> filled = new LinkedList<>();
-            for(int i = 0; i < 13; i++){
-                filled.add(false);
-            }*/
-            //if(octave.size() >= 8) {
-            for (int i = 0; i < 8; i++) {
-                // Change default to olmasi gereken
-                boolean hasPrevious = (i != 0);
-                // Previous note can be 0, implement to such case
-                double previousNote;
-                double currentNote;
+            tempIndices.add(freqs.indexOf(a));
+            for (int i = 1; i < 8; i++) {
                 float max = 0f;
                 /**
-                    OCTAVE HOLDS VALUES, GET FREQUENCIES INSTEAD! DO THIS FOR SECOND OCTAVE TOO!
+                 *
+                 *
+                    TODO OCTAVE HOLDS VALUES, GET FREQUENCIES INSTEAD! DO THIS FOR SECOND OCTAVE TOO!
+                 *
+                 *
                  **/
-                for (int b : octaveIndices) {
-                    if(hasPrevious){
-                        // Notes must be in certain range
-                        // TODO Method sifirdan buyuk degerler almak zorunda
-                        currentNote = freqs.get(b);
-                        currentNote = PitchConverter.hertzToAbsoluteCent(currentNote);
-                        previousNote = values.indexOf(temp.get(i-1));
-                        boolean largerThanThree;
-                        boolean smallerThanFourteen;
-                        // TODO Ikinci oktavdan cek burayi, hatali
-                        if(previousNote != -1.0){
-                            previousNote = freqs.get(values.indexOf(temp.get(i - 1)));
-                            previousNote = PitchConverter.hertzToAbsoluteCent(previousNote);
-                            largerThanThree = currentNote > previousNote + 68.0;
-                            smallerThanFourteen = currentNote < previousNote + 317.0;
-                            if (largerThanThree && smallerThanFourteen) {
-                                if (values.get(b) > max && !temp.contains(values.get(b))) {
-                                    max = values.get(b);
-                                }
-                            }
-                        } else {
 
-//                            // Find the first note you see, travelling to back
-//                            int holder = i;
-//                            // Assumes that initial tonic note is not zero, filler method was designed
-//                            // to fill initial zeros but this method doesn't allow it i guess???
-//                            while(previousNote == -1){
-//                                --holder;
-//                                previousNote = values.indexOf(temp.get(holder - 1));
-//                            }
-//
-//                            previousNote = freqs.get(values.indexOf(temp.get(holder - 1)));
-//                            previousNote = PitchConverter.hertzToAbsoluteCent(previousNote);
-//                            largerThanThree = currentNote > previousNote + ((i - holder + 1) * 68.0);
-//                            smallerThanFourteen = currentNote < previousNote + ((i - holder + 1) * 317.0);
-
-//                            if (largerThanThree && smallerThanFourteen) {
-                                if (values.get(b) > max && !temp.contains(values.get(b))) {
-                                    max = values.get(b);
-                                }
-//                            }
-                        }
-                    } else {
-                        if (values.get(b) > max && !temp.contains(values.get(b))) {
-                            max = values.get(b);
-                            //filled.set(i, true);
-                        }
+                for(int b = 0; b < octaveIndices.size(); b++)
+                    if (values.get(octaveIndices.get(b)) > max && !tempIndices.contains(octaveIndices.get(b))) {
+                        max = values.get(octaveIndices.get(b));
                     }
-                }
-                temp.add(max);
+                tempIndices.add(values.indexOf(max));
             }
 
+                Collections.sort(tempIndices);
             // Add First Octave to the return list.
             toAdd = new LinkedList<>();
-            if(temp.isEmpty()){
+            if(tempIndices.isEmpty()){
                 System.out.println("THIS IS EMPTY");
                 // TODO Buraya default 0 0 0 0 0 0 0 makamini koyabilirsin
             } else {
                 // TODO Gives index=-1 error! Nasil oluyorsa...
-                for (float b : temp) {
-                    if(b != 0){
-                        toAdd.add(freqs.get(values.indexOf(b)));
+                for (int b : tempIndices) {
+                    if(b != -1){
+                        toAdd.add(freqs.get(b));
                     }
                     else{
                         toAdd.add(0f);
                     }
                 }
             }
-
+            // Sirasi bozuk gidiyor, duzeltmek lazim
             toAdd = fillEmptyIndices(toAdd, a);
 
 
@@ -519,7 +465,7 @@ class Util {
                 }
             }
 
-            temp.clear();
+            tempIndices.clear();
 
             //  TODO if(octave.size() >= 6) vardi burada, bunun else ini 0 0 0 0 0default makami icin kullanabilirsin
             for (int i = 0; i < 6; i++) {
@@ -535,17 +481,17 @@ class Util {
                         //System.out.println("b is " + b + ",\ni is " + i + ",");
                         currentNote = freqs.get(b);
                         currentNote = PitchConverter.hertzToAbsoluteCent(currentNote);
-                        previousNote = values.indexOf(temp.get(i-1));
+                        previousNote = values.indexOf(tempIndices.get(i-1));
 
                         // Previous note was not something added
                         if(previousNote != -1.0) {
-                            previousNote = freqs.get(values.indexOf(temp.get(i - 1)));
+                            previousNote = freqs.get(values.indexOf(tempIndices.get(i - 1)));
                             previousNote = PitchConverter.hertzToAbsoluteCent(previousNote);
                             boolean largerThanThree = currentNote > previousNote + 68.0;
                             boolean smallerThanFourteen = currentNote < previousNote + 317.0;
 
                             if (largerThanThree && smallerThanFourteen) {
-                                if (values.get(b) > max && !temp.contains(values.get(b))) {
+                                if (values.get(b) > max && !tempIndices.contains(values.get(b))) {
                                     max = values.get(b);
                                 }
                             }
@@ -568,7 +514,7 @@ class Util {
 //                            boolean smallerThanFourteen = currentNote < previousNote + ((i - holder + 1) * 317.0);
 //
 //                            if (largerThanThree && smallerThanFourteen) {
-                                if (values.get(b) > max && !temp.contains(values.get(b))) {
+                                if (values.get(b) > max && !tempIndices.contains(values.get(b))) {
                                     max = values.get(b);
                                 }
 //                            }
@@ -576,22 +522,22 @@ class Util {
 
                     // Doesn't have a previous note, should be tonic
                     } else {
-                        if (values.get(b) > max && !temp.contains(values.get(b))) {
+                        if (values.get(b) > max && !tempIndices.contains(values.get(b))) {
                             max = values.get(b);
                         }
                     }
                 }
-                temp.add(max);
+                tempIndices.add(values.indexOf(max));
             } // End of second octave
 
             List<Float> toAdd2 = new LinkedList<>();
             // Should never come here
-            if(temp.isEmpty()){
+            if(tempIndices.isEmpty()){
                 System.out.println("THIS IS EMPTY");
                 // TODO Buraya default 0 0 0 0 0 0 0 makamini koyabilirsin
             } else {
                 // Used to give index = -1 error, should be solved by the b!=0 check
-                for (float b : temp) {
+                for (float b : tempIndices) {
                     if(b != 0){
                         toAdd2.add(freqs.get(values.indexOf(b)));
                     }
@@ -618,22 +564,26 @@ class Util {
 
     public List<Float> fillEmptyIndices(List<Float> temp, float currentTonic) {
 
-        // Set first note if it is 0
-        if(temp.get(0) == 0f){
-            temp.set(0, currentTonic);
-        }
+//        // Set first note if it is 0
+//        if(temp.get(0) == 0f){
+//            temp.set(0, currentTonic);
+//        }
         // Set last note if it is 0
-        if(temp.get(temp.size() - 1) == 0f){
-            double tonic = PitchConverter.hertzToAbsoluteCent((double)currentTonic);
-            double last = PitchConverter.absoluteCentToHertz(tonic + 1200);
-            temp.set(temp.size() - 1, (float)last);
-        }
+//        if(temp.get(temp.size() - 1) == 0f){
+//            double tonic = PitchConverter.hertzToAbsoluteCent((double)currentTonic);
+//            double last = PitchConverter.absoluteCentToHertz(tonic + 1200);
+//            temp.set(temp.size() - 1, (float)last);
+//        }
         //System.out.println("Changed First and Last indices, list is now " + temp.toString());
+
+        // TODO Sifirli elementleri aralari en acik olan degerlerin arasina yerlestir.
+        int countOfZeros = 0;
+
+
         // 0 li elementleri degistir
         for(int i = 1; i < temp.size(); i++){
             // Found element with 0
             if(temp.get(i) == 0f){
-                //System.out.println("FOUND 0 ON INDEX " + i);
                 // Cevresine bak, Onceki dolu mu, Sonraki dolu mu.
                 // Onceki bos olamaz muhtemelen, cunku bu adimdan gecip dolmustur.
                 // Aslinda olabilir de bilmiyorum
@@ -660,28 +610,6 @@ class Util {
                 double newNote = PitchConverter.absoluteCentToHertz(previous + distance);
                 temp.set(i, (float)newNote);
 
-//                System.out.println("Previous was: " + temp.get(i-1) + " with " + previous + " cents.");
-//                System.out.println("Next is: " + PitchConverter.absoluteCentToHertz(next) + " with " + next + " cents.");
-//                System.out.println("Distance is " + distance);
-
-//                List<Double> missingNotes = new LinkedList<>();
-//                for(int i1 = 0; i1 < notesTilNextNote; i1++){
-//                    missingNotes.add(previous + distance);
-//                    distance += distance;
-//                }
-//                System.out.println("Printing out missingNotes list:\n" + missingNotes + "");
-
-                // Convert cents to hertzes
-//                for(int i2 = 0; i2 < notesTilNextNote; i2++){
-//                    double missingNote = missingNotes.get(i2);
-//                    missingNote = PitchConverter.absoluteCentToHertz(missingNote);
-//                    temp.set(i, (float)missingNote);
-//                    if(notesTilNextNote > 1) {
-//                        i++;
-//                        notesTilNextNote--;
-//                    }
-//                    //System.out.println("Added " + missingNote + " and i is now " + i + "\n\n");
-//                }
 
             }
         }
