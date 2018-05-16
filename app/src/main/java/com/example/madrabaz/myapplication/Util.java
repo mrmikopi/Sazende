@@ -269,9 +269,9 @@ class Util {
 //            System.out.println(holds[1][i]);
 //        }
         System.out.println("DONE PRINTING FREQUENCES");
-        float[] noiseFloor = SpectralPeakProcessor.calculateNoiseFloor(holds[0], 5, 1.015f);
+        float[] noiseFloor = SpectralPeakProcessor.calculateNoiseFloor(holds[0], 5, 1f);
         List<Integer> localMaximas =SpectralPeakProcessor.findLocalMaxima(holds[0], noiseFloor);
-        return SpectralPeakProcessor.findPeaks(holds[0], holds[1], localMaximas, 115, 80);
+        return SpectralPeakProcessor.findPeaks(holds[0], holds[1], localMaximas, 185, 80);
     }
 
 
@@ -312,37 +312,8 @@ class Util {
     private List<List<Float>> getSongNotes(Map<Float, Float> lastOne){
         float[] notes = getMaxNotes(lastOne.entrySet());
         List<List<Float>> songNotes = getNotes(lastOne, notes);
-        //System.out.println("SONG NOTES ARE");
-        //System.out.println(songNotes.toString());
-        //System.out.println("\n");
         // TODO: Burayi songNotes = getCommas(songNotes); yap, print testler bitince
-        //List<List<Float>> songNotesComas = getCommas(songNotes);
         songNotes = getCommas(songNotes);
-
-//        try{
-//            FileWriter fw = new FileWriter(new File("/storage/emulated/0/Download/freqs.txt"), true);
-//            BufferedWriter bw = new BufferedWriter(fw);
-//
-//            bw.write("Printing Selected Notes\n");
-//
-//            for(List<Float> a : songNotes) {
-//                for (Float b : a) {
-//                    bw.write(b + "\n");
-//                }
-//            }
-//            bw.write("\nPrintint Notes With Commas\n");
-//            for(List<Float> a : songNotesComas) {
-//                for (Float b : a) {
-//                    bw.write(b + "\n");
-//                }
-//            }
-//            bw.write("\n\n");
-//            bw.close();
-//            fw.close();
-//        }   catch (IOException e){
-//            e.printStackTrace();
-//        }
-
 
         return songNotes;
     }
@@ -380,7 +351,6 @@ class Util {
 
     private List<List<Float>> getNotes(Map<Float, Float> lastOne, float[] notes) {
 
-        System.out.println("Salak metodu calistirdim. Notalar: " + notes.toString());
         List<List<Float>> allNotes = new LinkedList<>();
         List<Float> toAdd;
         List<Integer> octaveIndices;
@@ -412,22 +382,19 @@ class Util {
             tempIndices.add(freqs.indexOf(a));
             for (int i = 1; i < 8; i++) {
                 float max = 0f;
-                /**
-                 *
-                 *
-                    TODO OCTAVE HOLDS VALUES, GET FREQUENCIES INSTEAD! DO THIS FOR SECOND OCTAVE TOO!
-                 *
-                 *
-                 **/
 
-                for(int b = 0; b < octaveIndices.size(); b++)
+                for (int b = 0; b < octaveIndices.size(); b++)
                     if (values.get(octaveIndices.get(b)) > max && !tempIndices.contains(octaveIndices.get(b))) {
                         max = values.get(octaveIndices.get(b));
                     }
-                tempIndices.add(values.indexOf(max));
+                if (max == 0f) {
+                    tempIndices.add(tempIndices.get(tempIndices.size() - 1));
+                } else {
+                    tempIndices.add(values.indexOf(max));
+                }
             }
 
-                Collections.sort(tempIndices);
+            Collections.sort(tempIndices);
             // Add First Octave to the return list.
             toAdd = new LinkedList<>();
             if(tempIndices.isEmpty()){
@@ -437,15 +404,17 @@ class Util {
                 // TODO Gives index=-1 error! Nasil oluyorsa...
                 for (int b : tempIndices) {
                     if(b != -1){
+
                         toAdd.add(freqs.get(b));
                     }
                     else{
+                        System.out.println("I CAME HERE");
                         toAdd.add(0f);
                     }
                 }
             }
             // Sirasi bozuk gidiyor, duzeltmek lazim
-            toAdd = fillEmptyIndices(toAdd, a);
+//            toAdd = fillEmptyIndices(toAdd, a);
 
 
 
@@ -470,90 +439,30 @@ class Util {
             //  TODO if(octave.size() >= 6) vardi burada, bunun else ini 0 0 0 0 0default makami icin kullanabilirsin
             for (int i = 0; i < 6; i++) {
 
-                boolean hasPrevious = (i != 0);
-                double previousNote;
-                double currentNote;
                 float max = 0f;
 
-                for (int b : octaveIndices) {
-
-                    if(hasPrevious){
-                        //System.out.println("b is " + b + ",\ni is " + i + ",");
-                        currentNote = freqs.get(b);
-                        currentNote = PitchConverter.hertzToAbsoluteCent(currentNote);
-                        previousNote = values.indexOf(tempIndices.get(i-1));
-
-                        // Previous note was not something added
-                        if(previousNote != -1.0) {
-                            previousNote = freqs.get(values.indexOf(tempIndices.get(i - 1)));
-                            previousNote = PitchConverter.hertzToAbsoluteCent(previousNote);
-                            boolean largerThanThree = currentNote > previousNote + 68.0;
-                            boolean smallerThanFourteen = currentNote < previousNote + 317.0;
-
-                            if (largerThanThree && smallerThanFourteen) {
-                                if (values.get(b) > max && !tempIndices.contains(values.get(b))) {
-                                    max = values.get(b);
-                                }
-                            }
-
-                        // Previous note is absent
-                        } else {
-
-//                            // Find the first note you see, travelling to back
-//                            int holder = i;
-//                            // Assumes that initial tonic note is not zero, filler method was designed
-//                            // to fill initial zeros but this method doesn't allow it i guess???
-//                            while(previousNote == -1){
-//                                --holder;
-//                                previousNote = values.indexOf(temp.get(holder - 1));
-//                            }
-//
-//                            previousNote = freqs.get(values.indexOf(temp.get(holder - 1)));
-//                            previousNote = PitchConverter.hertzToAbsoluteCent(previousNote);
-//                            boolean largerThanThree = currentNote > previousNote + ((i - holder + 1) * 68.0);
-//                            boolean smallerThanFourteen = currentNote < previousNote + ((i - holder + 1) * 317.0);
-//
-//                            if (largerThanThree && smallerThanFourteen) {
-                                if (values.get(b) > max && !tempIndices.contains(values.get(b))) {
-                                    max = values.get(b);
-                                }
-//                            }
-                        }
-
-                    // Doesn't have a previous note, should be tonic
-                    } else {
-                        if (values.get(b) > max && !tempIndices.contains(values.get(b))) {
-                            max = values.get(b);
-                        }
+                for (int b = 0; b < octaveIndices.size(); b++) {
+                    if (values.get(octaveIndices.get(b)) > max && !tempIndices.contains(octaveIndices.get(b))) {
+                        max = values.get(octaveIndices.get(b));
                     }
+                }if (max == 0f) {
+                    tempIndices.add(tempIndices.get(tempIndices.size() - 1));
+                } else {
+                    tempIndices.add(values.indexOf(max));
                 }
-                tempIndices.add(values.indexOf(max));
             } // End of second octave
 
-            List<Float> toAdd2 = new LinkedList<>();
             // Should never come here
             if(tempIndices.isEmpty()){
                 System.out.println("THIS IS EMPTY");
                 // TODO Buraya default 0 0 0 0 0 0 0 makamini koyabilirsin
             } else {
                 // Used to give index = -1 error, should be solved by the b!=0 check
-                for (float b : tempIndices) {
-                    if(b != 0){
-                        toAdd2.add(freqs.get(values.indexOf(b)));
-                    }
-                    else{
-                        toAdd2.add(0f);
-                    }
+                for (int b : tempIndices) {
+                    // There was a check for, if not -1, this. Else, put 0f for hertz.(It crashes)
+                        toAdd.add(freqs.get(b));
                 }
             }
-            toAdd2 = fillEmptyIndices(toAdd, a);
-            toAdd.addAll(toAdd2);
-            System.out.println(toAdd.toString());
-            //temp.remove(temp.get(temp.size()-1));
-            //System.out.println(temp.toString());
-//            for(float b : temp){
-//                toAdd.add(freqs.get(values.indexOf(b)));
-//            }
             // Sorting is necessary
             Collections.sort(toAdd);
             allNotes.add(toAdd);
@@ -578,6 +487,34 @@ class Util {
 
         // TODO Sifirli elementleri aralari en acik olan degerlerin arasina yerlestir.
         int countOfZeros = 0;
+        for(Float f : temp){
+            if(f == 0f){
+                countOfZeros++;
+            }
+        }
+
+        // Quit method if possible
+        if(countOfZeros == 0)
+            return temp;
+
+        //Replace non zero elments with their absoulteCents
+        for(Float f : temp){
+            if(f != 0f){
+                f = (float)PitchConverter.hertzToAbsoluteCent(f);
+            }
+        }
+
+        // Find largest Gaps at number of zeros
+        List<Double> gaps = new LinkedList<>();
+
+        for(int c = 0; c < countOfZeros; c++){
+            for(int d = 0; d < temp.size(); d++){
+
+            }
+        }
+
+
+
 
 
         // 0 li elementleri degistir
@@ -631,6 +568,7 @@ class Util {
             }
 			allCommas.add(compared);
         }
+        System.out.println("Comma versions are:\n " + allCommas.toString());
         //System.out.println("SONG NOTES ARE (Comma): \n" + allCommas.toString() + "\n");
         return allCommas;
     }
@@ -664,80 +602,10 @@ class Util {
             }
             result.put(distance, makam);
         }
+        System.out.println("PRINTING RESULTS");
         for(Map.Entry<Float, String> a : result.entrySet()){
             System.out.println("Makam: " + a.getValue() + ", distance: " + a.getKey());
         }
-		//System.out.println("Possible Makams: \n" + result.toString());
-//        try{
-//            FileWriter fw = new FileWriter(new File("/storage/emulated/0/Download/freqs.txt"), true);
-//            BufferedWriter bw = new BufferedWriter(fw);
-//
-//            bw.write("Printing Possible Makams with Distances\n");
-//
-//            for(Map.Entry<Float, String> a : result.entrySet()){
-//                bw.write(a.getValue() + "\t" + a.getKey() + "\n");
-//            }
-//            bw.write("\n\n");
-//            bw.close();
-//            fw.close();
-//        }   catch (IOException e){
-//            e.printStackTrace();
-//        }
         return result;
     }
 }
-
-
-
-
-
-
-
-/*
-    public static TreeMap<Float,Float> peaksToLastMapValueOrder(List<SpectralPeakProcessor.SpectralPeak> peaks1, ValueComparator vc) {
-        TreeMap<Float, Float> lastOne = new TreeMap<>(vc);
-        for(SpectralPeakProcessor.SpectralPeak a : peaks1){
-            lastOne.put(a.getFrequencyInHertz(), a.getMagnitude());
-        }
-        return lastOne;
-    }
-    List<SpectralPeakProcessor.SpectralPeak> myList = SpectralPeakProcessor.findPeaks(
-            magnitudes,
-            frequences,
-            SpectralPeakProcessor.findLocalMaxima(
-                magnitudes,
-                SpectralPeakProcessor.calculateNoiseFloor(
-                        magnitudes,
-                        20, 1.5f)),
-            14,
-            40);
-
-    // ************** BUNU AL ILK PEAK SIRALAMASI ICIN ****** //
-    Collections.sort(myList, new Comparator<SpectralPeakProcessor.SpectralPeak>() {
-        @Override
-        public int compare(SpectralPeakProcessor.SpectralPeak o1, SpectralPeakProcessor.SpectralPeak o2) {
-            if(o1.getMagnitude() > o2.getMagnitude()) return -1;
-            else if(o1.getMagnitude() == o2.getMagnitude()) return 0;
-            else return 1;
-        }
-    });
-    for(SpectralPeakProcessor.SpectralPeak a : myList){
-        System.out.println(a.getFrequencyInHertz() + ", " + a.getMagnitude());
-    }
-
-    private List<SpectralPeakProcessor.SpectralPeak> sortList(List<SpectralPeakProcessor.SpectralPeak> a){
-    List<SpectralPeakProcessor.SpectralPeak> b = new ArrayList<>();
-    SpectralPeakProcessor.SpectralPeak toAdd = a.get(0);
-    int size = a.size()-1;
-    for(int i = 0; i < size; i++){
-        for(int j = 0; j < a.size()-1; j++){
-            if(a.get(j).getMagnitude() > toAdd.getMagnitude() && !b.contains(a.get(j))){
-                toAdd = a.get(j);
-            }
-        }
-        b.add(toAdd);
-        //a.remove(i);
-    }
-    return b;
-}
-*/
