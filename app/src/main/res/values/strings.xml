@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Sazende</string>
     <string name="choose_song">Choose Song</string>
     <string name="convert">Convert!</string>
     <string name="song_not_selected">Song not selected!</string>

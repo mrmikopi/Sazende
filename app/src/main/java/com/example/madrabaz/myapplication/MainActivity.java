@@ -18,9 +18,6 @@ import android.widget.Toast;
 import android.support.v7.widget.Toolbar;
 
 import java.io.IOException;
-import java.util.Map;
-
-import javax.xml.transform.Result;
 
 import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
 
@@ -35,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setTitle("Your Activity Title"); // for set actionbar title
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setTitle("Your Activity Title"); // for set actionbar title
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         appContext = getApplicationContext();
         util = new Util(appContext);
