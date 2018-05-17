@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
         new AndroidFFMPEGLocator(this);
         /* End Libraries */
         if (uri != null) {
-            TextView textView = findViewById(R.id.textView);
-            textView.setText("Please wait while program is loading...");
             textView.setVisibility(View.VISIBLE);
             String possibleMakam = util.getMakams(this.uri);
             Intent intent = new Intent(this, ResultActivity.class);
