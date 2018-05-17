@@ -7,4 +7,5 @@
     <string name="perm_deny">Permission denied to read your External storage</string>
     <string name="no_song_press">You did not select a song!</string>
     <string name="song_makam_is_probably">Song makam is probably:</string>
+    <string name="takes_long">Program may take a while to load…</string>
 </resources>
