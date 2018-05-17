@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         new AndroidFFMPEGLocator(this);
         /* End Libraries */
         if (uri != null) {
-            textView.setVisibility(View.VISIBLE);
+            //textView.setVisibility(View.VISIBLE);
             String possibleMakam = util.getMakams(this.uri);
             Intent intent = new Intent(this, ResultActivity.class);
             intent.putExtra(EXTRA_MESSAGE, possibleMakam);
