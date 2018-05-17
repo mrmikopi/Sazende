@@ -21,9 +21,9 @@ public class Weight {
     }
 
     float getAverage(){
-        //return magnitude*times;
+        return magnitude*times;
 		//return times;
-        return magnitude;
+        //return magnitude;
     }
 
     public float getMagnitude(){

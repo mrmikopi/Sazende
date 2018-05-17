@@ -1,5 +1,5 @@
 #Internal package file, do not edit.
-#Sat Apr 21 22:08:07 AST 2018
+#Thu May 17 19:14:50 AST 2018
 2.base=C\:\\Users\\MikailKaan\\ApkProjects\\MyApplication\\app\\build\\intermediates\\assets\\debug
 5.set=ASSET
 0.path=classes.dex

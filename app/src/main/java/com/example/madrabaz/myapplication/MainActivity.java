@@ -9,32 +9,42 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v7.widget.Toolbar;
 
 import java.io.IOException;
 import java.util.Map;
 
+import javax.xml.transform.Result;
+
 import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
 
 public class MainActivity extends AppCompatActivity {
+
     String uri;
     Util util;
     Context appContext;
+    public static final String EXTRA_MESSAGE = "com.example.sazende.MESSAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-		
-		appContext = getApplicationContext();
+        getSupportActionBar().setTitle("Your Activity Title"); // for set actionbar title
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        appContext = getApplicationContext();
         util = new Util(appContext);
         try {
             util.loadMakams();
         } catch (IOException e){
             e.printStackTrace();
         }
-
     }
 
     // TODO try catch for UnsupportedAudioFileException
@@ -44,7 +54,13 @@ public class MainActivity extends AppCompatActivity {
         new AndroidFFMPEGLocator(this);
         /* End Libraries */
         if (uri != null) {
-            Map<Float, String> possibleMakams = util.getMakams(this.uri);
+            TextView textView = findViewById(R.id.textView);
+            textView.setText("Please wait while program is loading...");
+            textView.setVisibility(View.VISIBLE);
+            String possibleMakam = util.getMakams(this.uri);
+            Intent intent = new Intent(this, ResultActivity.class);
+            intent.putExtra(EXTRA_MESSAGE, possibleMakam);
+            startActivity(intent);
         } else {
             Toast.makeText(MainActivity.this, R.string.no_song_press, Toast.LENGTH_SHORT).show();
         }
