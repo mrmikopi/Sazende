@@ -43,11 +43,50 @@ import static android.content.ContentValues.TAG;
 class Util {
 
     private Map<String, List<List<Float>>> makams = new LinkedHashMap<>();
+    private List<Map<String, List<Float>>> makamsSecond = new LinkedList<>();
 	private Context context;
 	
     Util(Context context){
 		this.context = context;
 	}
+
+	void loadMakams2() throws IOException{
+        final Resources resources = context.getResources();
+        int[] raws = {R.raw.aeuntervals2, R.raw.arelezgiuzdilek, R.raw.yarman1, R.raw.yarman2,
+                R.raw.yarman3, R.raw.karadeniz, R.raw.yavuzoglu};
+        String currentLine;
+        List<Map<String, List<Float>>> makamList = new LinkedList<>();
+        String[] words;
+        List<Float> insideList;
+        Map<String, List<Float>> insideMap;
+        for(int c : raws){
+            InputStream inStream = resources.openRawResource(c);
+            BufferedReader bis = new BufferedReader(new InputStreamReader(inStream));
+            insideMap = new HashMap<>();
+            try{
+                while ((currentLine = bis.readLine()) != null) {
+                    insideList = new ArrayList<>();
+                    words = currentLine.split("\\t");
+                    for (int i = 1; i < words.length; i++) {
+                        insideList.add(Float.parseFloat(words[i]));
+                    }
+                    // Fill the list to 13 elements
+                    int length = insideList.size();
+
+                    System.out.println("");
+                    for (int i = 0; i < 13 - length; i++) {
+                        insideList.add(insideList.get(insideList.size() - 7) + 53);
+                    }
+
+                    insideMap.put(words[0], insideList);
+                }
+                makamList.add(insideMap);
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+        makamsSecond = makamList;
+    }
 
     void loadMakams() throws IOException {
 
@@ -64,11 +103,6 @@ class Util {
             BufferedReader bis = new BufferedReader(new InputStreamReader(inStream));
 
             try {
-
-                // TODO FILE NAME SECECEKSIN BI SEKILDEEEEE
-
-                // TODO: Ustteki variablelarin iclerini bosaltmali miyiz,
-                // TODO garbage collector cok kotu etkiler mi
                 while ((currentLine = bis.readLine()) != null) {
                     insideList = new ArrayList<>();
                     words = currentLine.split("\\t");
@@ -142,7 +176,7 @@ class Util {
 
         final List<List<SpectralPeakProcessor.SpectralPeak>> peaks = new LinkedList<>();
         final String path = path1;
-
+        System.out.println("path1: " + path1 + ", path: " + path);
         // TODO Duzgun bi path check yap, null check filan
         assert path != null;
 		/* ********** THREAD STARTS ********** */
@@ -151,15 +185,18 @@ class Util {
             public void run() {
                 // TODO: Dosya wav ise pipe atma
                 // TODO Dosya boyutu cok buyukse alma
-                AudioDispatcher dispatcher = AudioDispatcherFactory.fromPipe(path,5500,512,256);
+
+                //1432 (512) 739 (1024)
+                AudioDispatcher dispatcher = AudioDispatcherFactory.fromPipe(path,5500,256,128);
 				// TODO dispatcher.skip(songDuration/2);
-                final SpectralPeakProcessor spectralPeakFollower = new SpectralPeakProcessor(512, 256, 5500);
+                final SpectralPeakProcessor spectralPeakFollower = new SpectralPeakProcessor(256, 128, 5500);
                 dispatcher.addAudioProcessor(spectralPeakFollower);
                 dispatcher.addAudioProcessor(new AudioProcessor() {
                     /* ********** TEKRAR EDEN KISIM ********** */
                     @Override
                     public boolean process(AudioEvent audioEvent) {
                         // TODO: Değerleri değiştir, tekrar dene.
+                        //System.out.println("workworkworkworkworkwork");
                         float[] magnitudes = spectralPeakFollower.getMagnitudes();
                         float[] freqs = spectralPeakFollower.getFrequencyEstimates();
                         float[] noiseFloor = SpectralPeakProcessor.calculateNoiseFloor(magnitudes, 3, 1f);
@@ -566,6 +603,8 @@ class Util {
     // TODO Incele neden Float String de String Float degil?
     private Map<Float, String> getResults(List<List<Float>> songNotes, Map<String, List<List<Float>>> makams) {
         HashMap<Float, String> result = new HashMap<>();
+
+        // for three probabilities
         for(List<Float> a : songNotes){
             double temp = 0;
             float distance = Float.MAX_VALUE;

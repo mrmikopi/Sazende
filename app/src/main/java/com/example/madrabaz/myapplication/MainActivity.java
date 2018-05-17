@@ -14,77 +14,40 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import be.tarsos.dsp.SpectralPeakProcessor;
 import be.tarsos.dsp.io.android.AndroidFFMPEGLocator;
 
 public class MainActivity extends AppCompatActivity {
-
-    // ISSUES
-    // Ses dosyasinin analizindan temiz sonuc gelmiyor, sadece bundan oturu sonuclar hatali
-    // Ikinci oktavda sikintilar, tekk oktavla halletsek olabilir
-
+    String uri;
     Util util;
+    Context appContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 		
-		Context appContext = getApplicationContext();
+		appContext = getApplicationContext();
         util = new Util(appContext);
-        // Run this in another thread so ui thread relaxes maybe?
-        //Context context = getApplicationContext();
         try {
             util.loadMakams();
         } catch (IOException e){
             e.printStackTrace();
         }
 
-        // Test for util.fillEmptyIndices
-//        List<Float> fakeNotes = new ArrayList<>();
-//        fakeNotes.add(220f);
-//        fakeNotes.add(0f);
-//        fakeNotes.add(261.6f);
-//        fakeNotes.add(0f);
-//        fakeNotes.add(0f);
-//        fakeNotes.add(349.228f);
-//        fakeNotes.add(391.995f);
-//        fakeNotes.add(440f);
-//
-//        System.out.println(fakeNotes.toString());
-//
-//        fakeNotes = util.fillEmptyIndices(fakeNotes, 220f);
-//        System.out.println(fakeNotes.toString());
-//
-//        fakeNotes.clear();
-//        fakeNotes.add(0f);
-//        fakeNotes.add(0f);
-//        fakeNotes.add(0f);
-//        fakeNotes.add(293.7f);
-//        fakeNotes.add(329f);
-//        fakeNotes.add(0f);
-//        fakeNotes.add(0f);
-//        fakeNotes.add(0f);
-//
-//        System.out.println(fakeNotes.toString());
-//        fakeNotes = util.fillEmptyIndices(fakeNotes, 220f);
-//        System.out.println(fakeNotes.toString());
-
     }
 
     // TODO try catch for UnsupportedAudioFileException
-    protected void button2Pressed(View view){
-        /* Permission Ask */
-        ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                1);
-        /* End of Permission Ask */
+    protected void button2Pressed(View view) {
 
-
-
+        /* For FFMPEG Libraries */
+        new AndroidFFMPEGLocator(this);
+        /* End Libraries */
+        if (uri != null) {
+            Map<Float, String> possibleMakams = util.getMakams(this.uri);
+        } else {
+            Toast.makeText(MainActivity.this, R.string.no_song_press, Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -101,24 +64,14 @@ public class MainActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-
-                    /* For FFMPEG Libraries */
-                    new AndroidFFMPEGLocator(this);
-                    /* End Libraries */
-
-                    //TODO Stringi adam akilli cek
-                    final TextView textView = (TextView) findViewById(R.id.textSelected);
-                    Uri uri = Uri.parse(textView.getText().toString());
-                    String path = PathFinder.getPath(getApplicationContext(), uri);
-
-                    //Map<Float, String> possibleMakams = util.getMakams(path);
-                    Map<Float, String> possibleMakams = util.getMakams(textView.getText().toString());
-                    //System.out.println(possibleMakams.toString() + "\n");
-
+                    Intent intent_upload = new Intent();
+                    intent_upload.setType("audio/*");
+                    intent_upload.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(intent_upload,1);
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, R.string.perm_deny, Toast.LENGTH_SHORT).show();
                 }
             }
             // other 'case' lines to check for other
@@ -128,10 +81,14 @@ public class MainActivity extends AppCompatActivity {
 
     //protected void buttonPressed(View view){
     protected void buttonPressed(View view){
-        Intent intent_upload = new Intent();
-        intent_upload.setType("audio/*");
-        intent_upload.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent_upload,1);
+
+        /* Permission Ask */
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                1);
+        /* End of Permission Ask */
+
+
     }
 
     @Override
@@ -142,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
             if(resultCode == RESULT_OK){
 
                 //the selected audio.
-                Uri uri = data.getData();
-                //TextView textSelected = (TextView) findViewById(R.id.textSelected);
-                TextView textSelected = findViewById(R.id.textSelected);
-                assert uri != null;
-                textSelected.setText(uri.toString());
+                Uri uri1 = data.getData();
+                TextView textSelected = (TextView) findViewById(R.id.textSelected);
+                assert uri1 != null;
+                this.uri = uri1.toString();
+                textSelected.setText(R.string.song_selected);
             }
         }
         super.onActivityResult(requestCode, resultCode, data);

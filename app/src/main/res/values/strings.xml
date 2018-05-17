@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="choose_song">Choose Song</string>
+    <string name="convert">Convert!</string>
+    <string name="song_not_selected">Song not selected!</string>
+    <string name="song_selected">Selected a song.</string>
+    <string name="perm_deny">Permission denied to read your External storage</string>
+    <string name="no_song_press">You did not select a song!</string>
 </resources>
